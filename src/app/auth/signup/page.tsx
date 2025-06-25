@@ -14,7 +14,14 @@ export default function SignUpPage() {
 
   const handleSignup = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (data?.user) {
+      await supabase.from("users").insert({
+        id: data.user.id,
+        email: data.user.email,
+        name: "",
+      });
+    }
     setLoading(false);
 
     if (error) {
