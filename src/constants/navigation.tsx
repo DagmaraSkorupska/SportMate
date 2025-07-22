@@ -2,7 +2,7 @@
 import HomeIcon from "@mui/icons-material/Home";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import ChatIcon from "@mui/icons-material/Chat";
-import PersonIcon from "@mui/icons-material/Person";
+// import PersonIcon from "@mui/icons-material/Person";
 import { ReactNode } from "react";
 
 export interface NavItem {
