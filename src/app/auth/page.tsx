@@ -42,7 +42,7 @@ export default function AuthPage() {
       }}
     >
       <Typography variant="h4" align="center" fontWeight="bold" mb={4}>
-        SportMate
+        ZagrajMy
       </Typography>
 
       <TextField

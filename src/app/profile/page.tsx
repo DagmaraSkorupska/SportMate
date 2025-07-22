@@ -38,20 +38,7 @@ export default function ProfilePage() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [selSport, setSelSport] = useState("");
   const [selLevel, setSelLevel] = useState("");
-  const { user, setUser } = useUserStore();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (data?.user) {
-        setUser(data.user);
-      }
-    };
-
-    if (!user) {
-      fetchUser();
-    }
-  }, [user]);
+  const { user } = useUserStore();
 
   useEffect(() => {
     (async () => {
@@ -68,7 +55,7 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
     (async () => {
       const [{ data: userData }, { data: usports }] = await Promise.all([
         supabase.from("users").select("name,bio").eq("id", user.id).single(),
@@ -101,7 +88,7 @@ export default function ProfilePage() {
         );
       }
     })();
-  }, [user]);
+  }, [user?.id]);
 
   const handleAdd = () => {
     if (!selSport || !selLevel) return;
@@ -143,10 +130,15 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
-  };
+  if (!user) {
+    return (
+      <Box sx={{ p: 4 }}>
+        <Typography>Ładowanie danych użytkownika...</Typography>
+      </Box>
+    );
+  }
+
+  console.log(user);
 
   return (
     <Box sx={{ maxWidth: 600, mx: "auto", mt: 6 }}>
@@ -157,9 +149,6 @@ export default function ProfilePage() {
         mb={2}
       >
         <Typography variant="h5">Twój profil</Typography>
-        <Button color="secondary" onClick={handleLogout}>
-          Wyloguj się
-        </Button>
       </Box>
 
       <TextField

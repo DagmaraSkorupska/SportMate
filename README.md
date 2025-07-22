@@ -1,4 +1,4 @@
-# SportMate 🏃‍♂️🎾
+# ZagrajMy 🏃‍♂️🎾
 
 **Progressive Web App** do wyszukiwania partnerów sportowych (bieganie, tenis, squash itd.)
 
@@ -6,7 +6,7 @@
 
 ## Opis projektu
 
-SportMate to nowoczesna web‑apk (PWA) stworzona w Next.js, pozwalająca użytkownikom znaleźć partnera do sportu na bazie lokalizacji, poziomu zaawansowania oraz dostępnych terminów.  
+ZagrajMy to nowoczesna web‑apk (PWA) stworzona w Next.js, pozwalająca użytkownikom znaleźć partnera do sportu na bazie lokalizacji, poziomu zaawansowania oraz dostępnych terminów.  
 Integruje realtime chat i mapy – szybkie MVP z perspektywą rozwoju do pełnej natywnej aplikacji.
 
 ---

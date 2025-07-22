@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import BottomNav from "@/components/BottomNav";
+import { TopNav } from "@/components/TopNav";
+import UserSessionProvider from "@/components/UserSessionProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,8 +20,8 @@ export const metadata: Metadata = {
   keywords: ["Sport", "Fitness", "Web App"],
   authors: [
     {
-      name: "Dagmara Skoruspka",
-      url: "https://github.com/DagmaraSkorupska/SportMate?tab=readme-ov-file#readme",
+      name: "Dagmara Skorupska",
+      url: "https://github.com/DagmaraSkorupska/ZagrajMy?tab=readme-ov-file#readme",
     },
   ],
   description:
@@ -35,7 +38,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <UserSessionProvider>
+          <TopNav />
+          {children}
+          <BottomNav />
+        </UserSessionProvider>
       </body>
     </html>
   );
