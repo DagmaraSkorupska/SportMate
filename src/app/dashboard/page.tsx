@@ -4,14 +4,13 @@ import { useEffect, useState } from "react";
 import { UserCard } from "@/components/UserCard";
 import SportFilterDropdown from "@/components/SportFilterDropdown";
 import supabase from "@/lib/supabaseClient";
-import { AppUserWithSports, UserSport } from "@/types";
-import { SupabaseUserRow, SupabaseSportRow } from "@/types/user";
-import { SupabaseLevel } from "@/types/level";
+import { AppUserWithSports } from "@/types";
+import { PublicProfile } from "@/types/user";
 
 type RawUserSportsRow = {
-  user: SupabaseUserRow | SupabaseUserRow[];
-  sports: SupabaseSportRow | SupabaseSportRow[];
-  level: SupabaseLevel | SupabaseLevel[];
+  user: PublicProfile | null;
+  sports: { name: string } | null;
+  level: { name: string; label: string } | null;
 };
 
 export default function DashboardPage() {
@@ -21,17 +20,17 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       let query = supabase.from("user_sports").select(`
-          user:users (
-            id, name, bio, profile_image_url
-          ),
-          sports (
-            name
-          ),
-          level:levels (
-            name,
-            label
-          )
-        `);
+  user:public_profiles (
+    id, name, bio, profile_image_url
+  ),
+  sports (
+    name
+  ),
+  level:levels (
+    name,
+    label
+  )
+`);
 
       if (selectedSports.length > 0) {
         query = query.in("sports.id", selectedSports);
@@ -46,29 +45,23 @@ export default function DashboardPage() {
 
       const grouped: { [uid: string]: AppUserWithSports } = {};
 
-      for (const row of data as RawUserSportsRow[]) {
-        const userObj = Array.isArray(row.user) ? row.user[0] : row.user;
-        const sportObj = Array.isArray(row.sports) ? row.sports[0] : row.sports;
-        const levelObj = Array.isArray(row.level) ? row.level[0] : row.level;
+      for (const row of data as unknown as RawUserSportsRow[]) {
+        if (!row.user || !row.sports || !row.level) continue;
 
-        if (!userObj || !sportObj || !levelObj) continue;
-
-        if (!grouped[userObj.id]) {
-          grouped[userObj.id] = {
-            id: userObj.id,
-            name: userObj.name,
-            bio: userObj.bio,
-            profile_image_url: userObj.profile_image_url,
+        if (!grouped[row.user.id]) {
+          grouped[row.user.id] = {
+            id: row.user.id,
+            name: row.user.name || "",
+            bio: row.user.bio || "",
+            profile_image_url: row.user.profile_image_url || "",
             sports: [],
           };
         }
 
-        const sportWithLevel: UserSport = {
-          sport: sportObj.name,
-          level: levelObj.label,
-        };
-
-        grouped[userObj.id].sports.push(sportWithLevel);
+        grouped[row.user.id].sports.push({
+          sport: row.sports.name,
+          level: row.level.label,
+        });
       }
 
       setUsers(Object.values(grouped));

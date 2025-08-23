@@ -37,6 +37,8 @@ export function TopNav() {
     router.push("/");
   };
 
+  console.log(user);
+
   return (
     <AppBar position="static" sx={{ display: { xs: "none", md: "flex" } }}>
       <Toolbar sx={{ justifyContent: "space-between" }}>

@@ -22,6 +22,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { Sport } from "@/types/index";
 import { Level } from "@/types/level";
 import { v4 as uuidv4 } from "uuid";
+import AvatarUploader from "@/components/AvatarUploader";
 
 interface Entry {
   id: string;
@@ -39,6 +40,8 @@ export default function ProfilePage() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [selSport, setSelSport] = useState("");
   const [selLevel, setSelLevel] = useState("");
+  const [profileImageUrl, setProfileImageUrl] = useState("");
+
   const { user } = useUserStore();
 
   useEffect(() => {
@@ -59,7 +62,11 @@ export default function ProfilePage() {
     if (!user?.id) return;
     (async () => {
       const [{ data: userData }, { data: usports }] = await Promise.all([
-        supabase.from("users").select("name,bio").eq("id", user.id).single(),
+        supabase
+          .from("users")
+          .select("name,bio, profile_image_url")
+          .eq("id", user.id)
+          .single(),
         supabase
           .from("user_sports")
           .select(
@@ -71,6 +78,7 @@ export default function ProfilePage() {
       if (userData) {
         setName(userData.name || "");
         setBio(userData.bio || "");
+        setProfileImageUrl(userData.profile_image_url || "");
       }
 
       if (usports) {
@@ -115,7 +123,10 @@ export default function ProfilePage() {
   const handleSubmit = async () => {
     if (!user) return;
     try {
-      await supabase.from("users").update({ name, bio }).eq("id", user.id);
+      await supabase
+        .from("users")
+        .update({ name, bio, profile_image_url: profileImageUrl })
+        .eq("id", user.id);
       await supabase.from("user_sports").delete().eq("user_id", user.id);
       const inserts = entries.map((e) => ({
         user_id: user.id,
@@ -139,10 +150,8 @@ export default function ProfilePage() {
     );
   }
 
-  console.log(user);
-
   return (
-    <Box sx={{ maxWidth: 600, mx: "auto", mt: 6 }}>
+    <Box sx={{ maxWidth: 900, mx: "auto", mt: 6 }}>
       <Box
         display="flex"
         justifyContent="space-between"
@@ -151,7 +160,11 @@ export default function ProfilePage() {
       >
         <Typography variant="h5">Twój profil</Typography>
       </Box>
-
+      <AvatarUploader
+        userId={user.id}
+        value={profileImageUrl}
+        onChange={setProfileImageUrl}
+      />
       <TextField
         label="Imię"
         fullWidth
@@ -159,6 +172,7 @@ export default function ProfilePage() {
         onChange={(e) => setName(e.target.value)}
         sx={{ mb: 2 }}
       />
+
       <TextField
         label="Bio"
         fullWidth
@@ -168,7 +182,6 @@ export default function ProfilePage() {
         onChange={(e) => setBio(e.target.value)}
         sx={{ mb: 4 }}
       />
-
       <Typography variant="h6" mb={2}>
         Dodaj sport + poziom:
       </Typography>
@@ -209,7 +222,6 @@ export default function ProfilePage() {
           Dodaj
         </Button>
       </Box>
-
       <List>
         {entries.map((e) => (
           <ListItem
@@ -225,7 +237,6 @@ export default function ProfilePage() {
           </ListItem>
         ))}
       </List>
-
       <Button
         variant="contained"
         fullWidth
